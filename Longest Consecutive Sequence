@@ -1,0 +1,104 @@
+//cpp taken help from solution explanation
+//but the code is written by myself
+//solution using hash map and intelligent building
+
+class Solution {
+    unordered_map<int,int> mp;
+public:
+    int build(int val){
+        if(mp.find(val)==mp.end())  return 0;
+        if(mp.at(val)!=0)   return mp.at(val);
+        
+        return mp[val]=build(val+1)+1;
+    }
+    
+    int longestConsecutive(vector<int>& nums) {
+        int ans=0;
+        for(int &v:nums)    mp[v]=0;
+        for(int &v:nums)    ans = max(ans,build(v+1)+1);
+        
+        return ans;
+    }
+};
+
+
+//solution 2 using unordered_sets and building once by one in consequence
+//faster than avg solution
+
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        int ans=0;
+        
+        unordered_set<int> s(nums.begin(),nums.end());
+        
+        for(int v:s){
+            if(s.find(v-1)==s.end()){
+                int curr=v;
+                int steak=1;
+                
+                while(s.find(curr+1)!=s.end()){
+                    curr++;
+                    steak++;
+                }
+                
+                ans = max(ans,steak);
+            }
+        }
+        
+        return ans;
+    }
+};
+
+//solution 3 but its very slow though time complexity is O(n)
+
+class Solution {
+public:
+    
+    int longestConsecutive(vector<int>& nums) {
+        int ans=0;
+        unordered_map<int,bool> mp;
+        
+        for(int &v:nums)    mp[v]=true;
+        
+        
+        for(int &v:nums){
+            if(mp.find(v-1)==mp.end()){
+                int curr=v;
+                int steak=1;
+                
+                while(mp.find(curr+1)!=mp.end()){
+                    steak+=1;
+                    curr+=1;
+                }
+                ans = max(ans,steak);
+            }
+        }
+        
+        return ans;
+    }
+};
+
+
+//problem
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+
+ 
+
+Example 1:
+
+Input: nums = [100,4,200,1,3,2]
+Output: 4
+Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.
+Example 2:
+
+Input: nums = [0,3,7,2,5,8,4,6,0,1]
+Output: 9
+ 
+
+Constraints:
+
+0 <= nums.length <= 105
+-109 <= nums[i] <= 109
