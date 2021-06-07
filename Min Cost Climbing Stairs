@@ -1,0 +1,36 @@
+//cpp my solution
+//using recursion and dp
+
+class Solution {
+    vector<int> c;
+    vector<int> dp;
+public:
+    int solve(int i){
+        if(i>=c.size()) return 0;
+        
+        if(dp[i])   return dp[i];
+        
+        dp[i] = min(solve(i+1),solve(i+2))+c[i];
+        
+        return dp[i];
+    }
+    int minCostClimbingStairs(vector<int>& cost) {
+        c=cost;
+        dp = vector<int>(c.size(),0);
+        return min(solve(0),solve(1));
+    }
+};
+
+//iterative solution
+
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& c) {
+        if((int)c.size()<2)    return 0;
+        
+        for(int i=c.size()-3;i>=0;i--)
+            c[i]+= min(c[i+1],c[i+2]);
+        
+        return min(c[0],c[1]);
+    }
+};
