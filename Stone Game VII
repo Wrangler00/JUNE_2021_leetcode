@@ -34,13 +34,6 @@ n == stones.length
 //my DP dfs solution
 //solution is accepted but very slow though
 
-
-static const auto io_sync_off = []()
-{
-    std::ios::sync_with_stdio(false);
-    cin.tie(NULL); return 0;
-}();
-
 class Solution {
     vector<int> s;
     vector<vector<pair<int,int>>> _dp[2];
