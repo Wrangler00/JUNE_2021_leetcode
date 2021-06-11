@@ -1,0 +1,106 @@
+Alice and Bob take turns playing a game, with Alice starting first.
+
+There are n stones arranged in a row. On each player's turn, they can remove either the leftmost stone or the rightmost stone from the row and receive points equal to the sum of the remaining stones' values in the row. The winner is the one with the higher score when there are no stones left to remove.
+
+Bob found that he will always lose this game (poor Bob, he always loses), so he decided to minimize the score's difference. Alice's goal is to maximize the difference in the score.
+
+Given an array of integers stones where stones[i] represents the value of the ith stone from the left, return the difference in Alice and Bob's score if they both play optimally.
+
+ 
+
+Example 1:
+
+Input: stones = [5,3,1,4,2]
+Output: 6
+Explanation: 
+- Alice removes 2 and gets 5 + 3 + 1 + 4 = 13 points. Alice = 13, Bob = 0, stones = [5,3,1,4].
+- Bob removes 5 and gets 3 + 1 + 4 = 8 points. Alice = 13, Bob = 8, stones = [3,1,4].
+- Alice removes 3 and gets 1 + 4 = 5 points. Alice = 18, Bob = 8, stones = [1,4].
+- Bob removes 1 and gets 4 points. Alice = 18, Bob = 12, stones = [4].
+- Alice removes 4 and gets 0 points. Alice = 18, Bob = 12, stones = [].
+The score difference is 18 - 12 = 6.
+Example 2:
+
+Input: stones = [7,90,5,1,100,10,10,2]
+Output: 122
+ 
+
+Constraints:
+
+n == stones.length
+2 <= n <= 1000
+1 <= stones[i] <= 1000
+
+//my DP dfs solution
+//solution is accepted but very slow though
+
+
+static const auto io_sync_off = []()
+{
+    std::ios::sync_with_stdio(false);
+    cin.tie(NULL); return 0;
+}();
+
+class Solution {
+    vector<int> s;
+    vector<vector<pair<int,int>>> _dp[2];
+public:
+    pair<int,int> solve(int start,int end,bool turn,int sum){
+        if(start>end)
+            return {0,0};
+        
+        if(_dp[turn][start][end] != make_pair(-1,-1))
+            return _dp[turn][start][end];
+        
+        int s1 = sum-s[start];
+        int s2 = sum-s[end];
+        
+        pair<int,int> tillnow1 = solve(start+1,end,!turn,s1);
+        pair<int,int> tillnow2 = solve(start,end-1,!turn,s2);
+        
+        //alice
+        if(turn){
+            int as1 = tillnow1.first+s1;
+            int as2 = tillnow2.first+s2;
+            int dif1 = as1-tillnow1.second;
+            int dif2 = as2-tillnow2.second;
+            
+            if(dif1>dif2){
+                _dp[turn][start][end] = {as1,tillnow1.second};
+                return {as1,tillnow1.second};
+            }else{
+                _dp[turn][start][end] = {as2,tillnow2.second};
+                return {as2,tillnow2.second};
+            }
+        }else{
+        //bob
+            int as1 = tillnow1.second+s1;
+            int as2 = tillnow2.second+s2;
+            int dif1 = as1-tillnow1.first;
+            int dif2 = as2-tillnow2.first;
+            
+            if(dif1>dif2){
+                _dp[turn][start][end] = {tillnow1.first,as1};
+                return {tillnow1.first,as1};
+            }else{
+                _dp[turn][start][end] = {tillnow2.first,as2};
+                return {tillnow2.first,as2};
+            }
+        }
+        
+        return {0,0};
+    }
+    int stoneGameVII(vector<int>& stones) {
+        s = stones;
+        int n = s.size();
+        int tot = 0;
+        
+        _dp[0] = vector<vector<pair<int,int>>>(n,vector<pair<int,int>>(n,pair<int,int>(-1,-1)));
+        _dp[1] = vector<vector<pair<int,int>>>(n,vector<pair<int,int>>(n,pair<int,int>(-1,-1)));
+        
+        for(auto &v:stones) tot+=v;
+        
+        pair<int,int> sum = solve(0,n-1,0,tot);
+        return abs(sum.first-sum.second);
+    }
+};
