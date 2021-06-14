@@ -88,3 +88,26 @@ public:
         return units_loaded;
     }
 };
+
+
+//solution 3 my fastest solution 24 ms
+
+class Solution {
+public:
+    int maximumUnits(vector<vector<int>>& box, int t) {
+        vector<int> cs(1001,0);
+        
+        for(auto &v:box)    cs[v[1]]+=v[0];
+        
+        int ans=0;
+        
+        for(int i=1000;i>=0;i--){
+            if(!cs[i]) continue;
+            int tmp = min(t,cs[i]);
+            ans += tmp*i;
+            t-=tmp;
+        }
+        
+        return ans;
+    }
+};
