@@ -135,4 +135,40 @@ public:
 };
 
 //my solution using pure bit wise operations
-//ans bitmasking
+//and bitmasking
+
+class Solution {
+    vector<string> ans;
+    int lim;
+public:
+    void createValid(int n){
+        string s="";
+        int j=lim,judge=0;
+        
+        while(j--){
+            if(n&(1<<j)){
+                ++judge;
+                s+='(';
+            }else if(judge>0){
+                --judge;
+                s+=')';
+            }else{
+                return;
+            }
+        }
+        
+        if(!judge)  ans.push_back(s);
+    }
+    vector<string> generateParenthesis(int n) {
+        lim=2*n;
+        int a1 = (2<<(n-1))-1;
+        int a2 = a1<<n;
+        
+        while(a1<=a2){
+            createValid(a1);
+            ++a1;
+        }
+        
+        return ans;
+    }
+};
