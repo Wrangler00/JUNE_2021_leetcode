@@ -19,7 +19,43 @@ Constraints:
 //cpp my solution
 //using nect permutation
 
+//solution 1
+class Solution {
+public:
+    bool isValid(string s){
+        int judge=0;
+        for(auto &ch:s){
+            if(ch=='(')
+                ++judge;
+            else if(judge<=0)
+                return false;
+            else --judge;
+        }
+        
+        return !judge;
+    }
+    vector<string> generateParenthesis(int n) {
+        vector<string> ans;
+        string s="";
+        
+        for(int i=0;i<2*n;i++){
+            if(i<n)s+="(";
+            else s+=")";
+        }
+        
+        do{
+            if(isValid(s))
+                ans.push_back(s);
+        }while(next_permutation(s.begin(),s.end()));
+        
+        return ans;
+    }
+};
 
+
+//solution 2
+//using stack and next permutation
+//bit slower
 class Solution {
 public:
     bool isValid(string s){
