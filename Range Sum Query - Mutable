@@ -1,0 +1,115 @@
+Given an integer array nums, handle multiple queries of the following types:
+
+Update the value of an element in nums.
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+void update(int index, int val) Updates the value of nums[index] to be val.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+ 
+
+Example 1:
+
+Input
+["NumArray", "sumRange", "update", "sumRange"]
+[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]
+Output
+[null, 9, null, 8]
+
+Explanation
+NumArray numArray = new NumArray([1, 3, 5]);
+numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9
+numArray.update(1, 2);   // nums = [1, 2, 5]
+numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8
+ 
+
+Constraints:
+
+1 <= nums.length <= 3 * 104
+-100 <= nums[i] <= 100
+0 <= index < nums.length
+-100 <= val <= 100
+0 <= left <= right < nums.length
+At most 3 * 104 calls will be made to update and sumRange.
+
+//cpp my submission
+//using segment tree
+
+#define l(n) 2*n+1
+#define r(n) 2*n+2
+#define treesize(x) 2*(int)pow(2,(int)ceil(log2(x)))-1
+
+class SegementTree{
+    vector<int> sgtree;
+    public:
+        SegementTree(int sz){
+            sgtree = vector<int>(treesize(sz),0);
+        }
+    
+        int construct(int l,int r,int node,vector<int> &arr){
+            if(l==r){
+                sgtree[node] = arr[l];
+                return sgtree[node];
+            }
+            
+            int mid = (l+r)/2;
+            sgtree[node] = construct(l,mid,l(node),arr)+construct(mid+1,r,r(node),arr);
+            
+            return sgtree[node];
+        }
+    
+        void updateTree(int tl,int tr,int &i,int node,int &diff){
+            if(i<tl || i>tr)
+                return;
+            
+            sgtree[node]+=diff;
+            
+            if(tl!=tr){
+                int mid = (tl+tr)/2;
+                updateTree(tl,mid,i,l(node),diff);
+                updateTree(mid+1,tr,i,r(node),diff);
+            }
+        }
+    
+        int getSum(int tl, int tr,int &l,int &r,int node){
+            if(tr<l || tl>r)
+            return 0;
+        
+            if(tl>=l && tr<=r)
+                return sgtree[node];
+
+            int mid = (tl+tr)/2;
+            return getSum(tl,mid,l,r,l(node))+getSum(mid+1,tr,l,r,r(node));
+        }
+};
+class NumArray {
+    SegementTree *tree;
+    vector<int> arr;
+    int sz;
+public:
+    
+    NumArray(vector<int>& nums) {
+        sz = nums.size();
+        arr = nums;
+        tree = new SegementTree(sz);
+        tree->construct(0,sz-1,0,nums);
+    }
+    
+    void update(int i, int val) {
+        int diff = val-arr[i];
+        arr[i]=val;
+        tree->updateTree(0,sz-1,i,0,diff);
+    }
+    
+    int sumRange(int l,int r) {
+        return tree->getSum(0,sz-1,l,r,0);
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(index,val);
+ * int param_2 = obj->sumRange(left,right);
+ */
