@@ -77,3 +77,36 @@ public:
         return ans;
     }
 };
+
+
+//solution 2 
+//O(n) one pass
+//little fast than solution 1
+
+class Solution {
+public:
+    inline int form(int n){
+        return n<2?n:((long)n*(n+1))/2;
+    }
+    
+    int numSubarrayBoundedMax(vector<int>& nums, int l, int r) {
+        int diff=0,minarr=0,i,start=0,ans=0;
+        
+        for(i=0;i<nums.size();i++){
+            if(nums[i]>r){
+                ans+= form(i-start)-(diff+=form(minarr));
+                start = i+1;
+                diff=minarr=0;
+            }else if(nums[i]>=l && nums[i]<=r){
+                diff+=form(minarr);
+                minarr=0;
+            }else{
+                minarr++;
+            }
+        }
+        
+        if(start<=i)    ans+= form(i-start)-(diff+=form(minarr));
+        
+        return ans;
+    }
+};
